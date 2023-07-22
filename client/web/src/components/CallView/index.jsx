@@ -1,5 +1,5 @@
 /**
- * src/components/CallView/index.jsx
+ * src/components/PodyXView/index.jsx
  * User can stop or continue the call. Allows audios playing and switch to TextView.
  * 
  * created by Lynchee on 7/16/23
@@ -18,6 +18,12 @@ import { playAudios } from '../../utils/audioUtils';
 const CallView = ( {isRecording, isPlaying, audioPlayer, handleStopCall, handleContinueCall, audioQueue, setIsPlaying, handleDisconnect, setIsCallView} ) => {
     const audioContextRef = useRef(null);
 
+<<<<<<< HEAD
+=======
+  const [localStream, setLocalStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
+
+>>>>>>> myrepo/main
     useEffect(() => {
       if (isPlaying) {
         playAudios(audioContextRef, audioPlayer, audioQueue, setIsPlaying);
