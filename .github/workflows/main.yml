@@ -1,15 +1,42 @@
-# GitHub Actions config
+name: CI/CD
 
-# GitHub Actions config
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-# GitHub Actions config
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-# GitHub Actions config
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-# GitHub Actions config
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
 
-# GitHub Actions config
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-# GitHub Actions config
+      - name: Run tests
+        run: |
+          python -m pytest
 
-# Your code goes here
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Deploy to production
+        run: |
+          # Add deployment commands here
