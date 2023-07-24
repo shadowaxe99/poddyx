@@ -1,26 +1,17 @@
 # Use an official Python runtime as a parent image
 FROM python:3.8-slim-buster
 
-# The environment variable ensures that the python output is set straight
-# to the terminal without buffering it first
-ENV PYTHONUNBUFFERED 1
+# Set the working directory in the container to /app
+WORKDIR /app
 
-# create root directory for our project in the container
-RUN mkdir /podcast_app
-
-# Set the working directory to /podcast_app
-WORKDIR /podcast_app
-
-# Copy the current directory contents into the container at /podcast_app
-ADD . /podcast_app/
+# Add the current directory contents into the container at /app
+ADD . /app
 
 # Install any needed packages specified in requirements.txt
-RUN apt-get update && apt-get install -y gcc python3-dev portaudio19-dev libgomp1 libomp-dev libomp-7-dev
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# tell the port number the container should expose
-EXPOSE 5000
+# Make port 80 available to the world outside this container
+EXPOSE 80
 
-# run the command
-CMD ["python", "./backend/main.py"]
+# Run app.py when the container launches
+CMD ["python", "backend/app.py"]

@@ -1,52 +1,42 @@
-from design_guidelines import DesignGuidelines
-from feedback import Feedback
-from integrations import Integrations
-from mobile_support import MobileSupport
-from navigation import Navigation
-from search import Search
-from testing_interface import TestingInterface
-from visual_cues import VisualCues
+import os
+import warnings
 
-class Main:
-    def __init__(self):
-        self.design_guidelines = DesignGuidelines()
-        self.feedback = Feedback()
-        self.integrations = Integrations()
-        self.mobile_support = MobileSupport()
-        self.navigation = Navigation()
-        self.search = Search()
-        self.testing_interface = TestingInterface()
-        self.visual_cues = VisualCues()
+from dotenv import load_dotenv
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
-    def initializing_projects(self):
-        pass
+from realtime_ai_character.audio.speech_to_text import get_speech_to_text
+from realtime_ai_character.audio.text_to_speech import get_text_to_speech
+from realtime_ai_character.character_catalog.catalog_manager import CatalogManager
+from realtime_ai_character.restful_routes import router as restful_router
+from realtime_ai_character.utils import ConnectionManager
+from realtime_ai_character.websocket_routes import router as websocket_router
 
-    def monitoring_agent_activity(self):
-        pass
+load_dotenv()
 
-    def providing_feedback(self):
-        pass
+app = FastAPI()
 
-    def reviewing_code(self):
-        pass
+app.add_middleware(
+    CORSMiddleware,
+    # Change to domains if you deploy this to production
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    def managing_agents(self):
-        pass
+app.include_router(restful_router)
+app.include_router(websocket_router)
+app.mount("/static", StaticFiles(directory=os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'static')), name="static")
 
-    def initiating_chat(self):
-        pass
 
-    def running_tests(self):
-        pass
+# initializations
+CatalogManager.initialize(overwrite=True)
+ConnectionManager.initialize()
+get_text_to_speech()
+get_speech_to_text()
 
-    def searching_feedback(self):
-        pass
-
-    def visualizing_data(self):
-        pass
-
-    def integrating_IDEs(self):
-        pass
-
-    def interacting_with_avatars(self):
-        pass
+# suppress deprecation warnings
+warnings.filterwarnings("ignore", module="whisper")

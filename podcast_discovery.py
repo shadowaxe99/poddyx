@@ -1,6 +1,10 @@
-from flask import request, jsonify
+from flask import Flask, request, jsonify
 from models import Podcast, User
 from database_config import db
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite'
+db.init_app(app)
 
 @app.route('/searchPodcast', methods=['GET'])
 def search_podcast():
@@ -33,3 +37,6 @@ def recommend_podcast():
             'host': User.query.get(podcast.host_id).username
         })
     return jsonify(result)
+
+if __name__ == '__main__':
+    app.run(debug=True)

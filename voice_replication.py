@@ -1,8 +1,6 @@
 import requests
 from flask import request, jsonify
-from eleven_labs_api import ElevenLabsAPI
 
-eleven_labs_api = ElevenLabsAPI()
 
 @app.route('/replicate_voice', methods=['POST'])
 def replicate_voice():
@@ -14,7 +12,7 @@ def replicate_voice():
         return jsonify({'error': 'Missing text or voice_id'}), 400
 
     try:
-        audio_data = eleven_labs_api.replicate_voice(text, voice_id)
+        audio_data = generate(text, voice_id)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

@@ -1,27 +1,29 @@
-# backend/models.py
-
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 
+db = SQLAlchemy()
 
-from datetime import datetime
-
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
+    username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    password = db.Column(db.String(120), nullable=False)
+    podcasts = db.relationship('Podcast', backref='user', lazy=True)
 
-    def __repr__(self):
-        return f'<User {self.username}>'
+class Podcast(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.String(500), nullable=False)
+    artwork = db.Column(db.String(120), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-  id = db.Column(db.Integer, primary_key=True)
-  username = db.Column(db.String(80), unique=True)
-  email = db.Column(db.String(120), unique=True)
-  roles = db.Column(db.String(60))
+class Guest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    voice_model = db.Column(db.String(120), nullable=False)
+    podcasts = db.relationship('Podcast', secondary='podcast_guest', backref=db.backref('guests', lazy='dynamic'))
 
-class Post(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  title = db.Column(db.String(180), nullable=False)
-  content = db.Column(db.Text)
-  user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+podcast_guest = db.Table('podcast_guest',
+    db.Column('podcast_id', db.Integer, db.ForeignKey('podcast.id'), primary_key=True),
+    db.Column('guest_id', db.Integer, db.ForeignKey('guest.id'), primary_key=True)
+)

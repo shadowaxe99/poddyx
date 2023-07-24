@@ -1,70 +1,35 @@
-from flask import jsonify
-from .podcast_processing import process_podcast
-from .podcast_statistics import update_statistics
-from .podcast_database import db, Podcast
+from flask import Blueprint, request, jsonify
+from models import Podcast, db
+from werkzeug.utils import secure_filename
+import os
 
-from flask import jsonify
-from .podcast_processing import process_podcast
-from .podcast_statistics import update_statistics
-from .podcast_database import db, Podcast
+podcast_publishing = Blueprint('podcast_publishing', __name__)
 
-# ... (add your logic here)
+UPLOAD_FOLDER = '/path/to/the/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def publish_podcast(data):
-    # ... (add your logic here)
-    # Example logic: Send a notification
-    send_notification('New podcast published: {}'.format(data['title']))
-
-    # Example logic: Process the podcast
-    process_podcast(data)
-
-    # Example logic: Update podcast statistics
-    update_statistics()
-
-    # Example logic: Save the podcast to the database
-    podcast = Podcast(
-        title=data['title'],
-        description=data['description'],
-        duration=data['duration'],
-        host=data['host']
-    )
-    db.session.add(podcast)
-    db.session.commit()
-
-    # Example logic: Return a success response
-    response = {
-        'message': 'Podcast published successfully',
-        'data': data
-    }
-    return jsonify(response)
-
-
-
-def publish_podcast(data):
-    # ... (add your logic here)
-    # Example logic: Send a notification
-    send_notification('New podcast published: {}'.format(data['title']))
-
-    # Example logic: Process the podcast
-    process_podcast(data)
-
-    # Example logic: Update podcast statistics
-    update_statistics()
-
-    # Example logic: Save the podcast to the database
-    podcast = Podcast(
-        title=data['title'],
-        description=data['description'],
-        duration=data['duration'],
-        host=data['host']
-    )
-    db.session.add(podcast)
-    db.session.commit()
-
-    # Example logic: Return a success response
-    response = {
-        'message': 'Podcast published successfully',
-        'data': data
-    }
-    return jsonify(response)
+@podcast_publishing.route('/publishPodcast', methods=['POST'])
+def publish_podcast():
+    if 'file' not in request.files:
+        return jsonify({"message": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"message": "No selected file"}), 400
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        podcast = Podcast.query.filter_by(id=request.form['podcastId']).first()
+        if podcast:
+            podcast.artwork = os.path.join(UPLOAD_FOLDER, filename)
+            podcast.title = request.form['title']
+            podcast.description = request.form['description']
+            db.session.commit()
+            return jsonify({"message": "Podcast published successfully"}), 200
+        else:
+            return jsonify({"message": "Podcast not found"}), 404
+    else:
+        return jsonify({"message": "File not allowed"}), 400

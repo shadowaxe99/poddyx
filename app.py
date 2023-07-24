@@ -1,62 +1,42 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import models
+import routes
+import voice_replication
+import podcast_editing
+import podcast_publishing
+import user_profile
+import podcast_sharing
+import podcast_discovery
+import database_config
+import openai_api
 
 app = Flask(__name__)
+CORS(app)
 
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
+@app.route('/login', methods=['POST'])
+def login():
+    return routes.loginUser(request)
 
-@app.route('/api/data', methods=['GET'])
-from flask import abort
+@app.route('/signup', methods=['POST'])
+def signup():
+    return routes.signupUser(request)
 
-@app.route('/api/data', methods=['GET'])
-def get_data():
-    try:
-        # Fetch data from database or external API
-        data = {
-            'message': 'This is some data',
-            'value': 42
-        }
-        return jsonify(data)
-    except Exception as e:
-        # Handle any errors that occur
-        abort(500)
+@app.route('/editPodcast', methods=['POST'])
+def edit_podcast():
+    return podcast_editing.editPodcast(request)
 
-    data = {
-        'message': 'This is some data',
-        'value': 42
-    }
-    return jsonify(data)
+@app.route('/publishPodcast', methods=['POST'])
+def publish_podcast():
+    return podcast_publishing.publishPodcast(request)
 
-@app.route('/api/submit', methods=['POST'])
-from flask import abort
+@app.route('/sharePodcast', methods=['POST'])
+def share_podcast():
+    return podcast_sharing.sharePodcast(request)
 
-@app.route('/api/submit', methods=['POST'])
-def submit_data():
-    try:
-        data = request.get_json()
-        # Validate the submitted data
-        if not data:
-            abort(400)
-        # Process the submitted data
-        # ... (add your logic here)
-        response = {
-            'message': 'Data submitted successfully',
-            'data': data
-        }
-        return jsonify(response)
-    except Exception as e:
-        # Handle any errors that occur
-        abort(500)
-
-    data = request.get_json()
-    # Process the submitted data
-    # ... (add your logic here)
-    response = {
-        'message': 'Data submitted successfully',
-        'data': data
-    }
-    return jsonify(response)
+@app.route('/searchPodcast', methods=['GET'])
+def search_podcast():
+    return podcast_discovery.searchPodcast(request)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

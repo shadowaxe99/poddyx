@@ -1,6 +1,10 @@
-from flask import request, jsonify
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
 from models import User
-from database_config import db
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite'
+db = SQLAlchemy(app)
 
 @app.route('/userProfile', methods=['GET'])
 def get_user_profile():
@@ -28,3 +32,6 @@ def update_user_profile():
         return jsonify({'message': 'User profile updated successfully'}), 200
     else:
         return jsonify({'message': 'User not found'}), 404
+
+if __name__ == '__main__':
+    app.run(debug=True)
