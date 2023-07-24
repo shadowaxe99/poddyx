@@ -1,22 +1,16 @@
-# ChangeLog
+# Changelog
 
-## [v0.0.1] - 2023-07-19
-Release Highlights:
+All notable changes to this project will be documented in this file.
 
-### Product releases and updates:
-- iOS App TestFlight public beta (link https://testflight.apple.com/join/JA6p9sZQ)
-- Rewrite Web codebase from vanilla JavaScript to use React framework w/ Javascript
-- Support Unicode in chat messages
-- Various UI refinements
+## [Unreleased]
 
-### Integration updates:
-- Support Azure OpenAI
+- Feature 1
+- Feature 2
 
-### Observability and quality updates:
-- Support Integration with LangSmith
-- Reduce Docker rebuild time to ~2 seconds
-- Support string based user ID
-- Support Session ID, Platform, Action Type in database records.
+## [1.0.0] - 2022-01-01
 
-### New Tutorial:
-[How to make your own AI character and run it locally](https://youtu.be/meg5Q8vdWeQ)
+- Initial release
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
